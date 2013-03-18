@@ -39,6 +39,16 @@ function assembleMailerObject( mail, callback ) {
 	// from the mail object, generate a body and subject from the templates
 	getTemplateParts( mail, function ( body, subject ) {
 
+		if ( !body ) {
+			callback( 'could not render email body', null );
+			return;
+		}
+
+		if ( !subject ) {
+			callback( 'could not render email subject', null );
+			return;
+		}
+
 		var sendObject = {
 			html:                 body,
 			subject:              subject,

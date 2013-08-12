@@ -242,12 +242,17 @@ module.exports.init = function ( params ) {
 
 module.exports.sendMail = function ( mail, callback ) {
 
+	var sentObject = { body: null, subject: null };
+
 	// wrap the callback in a execution break
 	var _callback = function ( error, object ) {
 		if ( typeof callback === 'function' ) {
+
+			object.sendObject = sentObject;
 			process.nextTick( function () {
 				callback( error, object );
 			} );
+
 		}
 	};
 
@@ -261,7 +266,11 @@ module.exports.sendMail = function ( mail, callback ) {
 			_callback( 'Unknown error generating send object', null );
 		}
 		else {
+			sentObject.body = sendObject.html || null;
+			sentObject.subject = sendObject.subject || null;
+
 			configs.mailer.sendMail( sendObject, _callback );
+
 		}
 
 	} );

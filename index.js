@@ -248,7 +248,9 @@ module.exports.sendMail = function ( mail, callback ) {
 	var _callback = function ( error, object ) {
 		if ( typeof callback === 'function' ) {
 
-			object.sendObject = sentObject;
+			if ( object ) {
+				object.sendObject = sentObject;
+			}
 			process.nextTick( function () {
 				callback( error, object );
 			} );

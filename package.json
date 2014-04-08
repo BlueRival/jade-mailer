@@ -1,23 +1,23 @@
 {
-	"name":         "jade-mailer",
-	"description":  "A Jade template driven email generator. It's \"bring your own mailer\", so provide any mailer instance that conforms to node-mailers interface for sendMail() method.",
-	"version":      "1.0.0",
-	"author":       "Anthony Hildoer <anthony@bluerival.com>",
-	"repository":   {
+	"name": "jade-mailer",
+	"description": "A Jade template driven email generator. It's \"bring your own mailer\", so provide any mailer instance that conforms to node-mailers interface for sendMail() method.",
+	"version": "1.0.1",
+	"author": "Anthony Hildoer <anthony@bluerival.com>",
+	"repository": {
 		"type": "git",
-		"url":  "git@github.com:BlueRival/jade-mailer.git"
+		"url": "git@github.com:BlueRival/jade-mailer.git"
 	},
 	"dependencies": {
-		"jade":        "~1.3.0",
-		"promised-io": "~0.3.0"
+		"jade": "~1.3",
+		"promised-io": "~0.3"
 	},
-	"keywords":     [
+	"keywords": [
 		"mailer",
 		"jade",
 		"template"
 	],
-	"engines":      {
+	"engines": {
 		"node": ">=0.10.0"
 	},
-	"license":      "MIT"
+	"license": "MIT"
 }

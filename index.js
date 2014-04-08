@@ -37,7 +37,7 @@ function assembleMailerObject( mail, callback ) {
 	}
 
 	// from the mail object, generate a body and subject from the templates
-	getTemplateParts( mail, function ( body, subject ) {
+	getTemplateParts( mail, function( body, subject ) {
 
 		if ( !body ) {
 			callback( 'could not render email body', null );
@@ -50,8 +50,8 @@ function assembleMailerObject( mail, callback ) {
 		}
 
 		var sendObject = {
-			html:                 body,
-			subject:              subject,
+			html: body,
+			subject: subject,
 			generateTextFromHTML: true
 		};
 
@@ -64,7 +64,7 @@ function assembleMailerObject( mail, callback ) {
 		}
 
 		// bye bye
-		process.nextTick( function () {
+		setImmediate( function() {
 			callback( null, sendObject );
 		} );
 
@@ -85,9 +85,9 @@ function getTemplateParts( mail, callback ) {
 	var callbackReady = true;
 
 	// utility wrapper around the actual callback
-	var callbackInternal = function ( body, subject ) {
+	var callbackInternal = function( body, subject ) {
 		if ( callbackReady ) {
-			process.nextTick( function () {
+			setImmediate( function() {
 				callback( body, subject );
 			} );
 		}
@@ -98,13 +98,13 @@ function getTemplateParts( mail, callback ) {
 	var ttl = setTimeout( callbackInternal, 300, false, false );
 
 	// once the promises have been resolved (or one rejected), kill the TTL and fire the callback
-	promise_io.when( promise, function ( parts ) {
+	promise_io.when( promise, function( parts ) {
 
 		// clear ttl
 		clearTimeout( ttl );
 
 		callbackInternal( parts[0], parts[1] );
-	}, function () {
+	}, function() {
 
 		// clear ttl
 		clearTimeout( ttl );
@@ -121,13 +121,13 @@ function getTemplatePart( mail, template ) {
 	var templateFile = configs.templateDir + "/" + mail.template + '/' + template + '.jade';
 	var promise = new promise_io.Promise();
 	var options = {
-		cache:    true,
+		cache: true,
 		filename: templateFile
 	};
 	var functionCacheKey = JSON.stringify( options ); // templates are actually compiled into a javascript function for rendering, and are cached here
 
 	// get the contents of the template file
-	var getContents = function ( callback ) {
+	var getContents = function( callback ) {
 
 		// the template file contents is cached, callback immediately
 		if ( templateCache[templateFile] ) {
@@ -138,7 +138,7 @@ function getTemplatePart( mail, template ) {
 		else {
 
 			// no cache, see if the file exists
-			fs.stat( templateFile, function ( err, stat ) {
+			fs.stat( templateFile, function( err, stat ) {
 
 				// no file, bad mojo
 				if ( err || (stat && !stat.isFile()) ) {
@@ -149,7 +149,7 @@ function getTemplatePart( mail, template ) {
 				else {
 
 					// there is a file, read it, cache it, callitbackit
-					fs.readFile( templateFile, "utf8", function ( err, data ) {
+					fs.readFile( templateFile, "utf8", function( err, data ) {
 
 						templateCache[templateFile] = data ? data : false;
 
@@ -164,7 +164,7 @@ function getTemplatePart( mail, template ) {
 	};
 
 	// runs the cached, compiled template, and resolves the promise
-	var executeCompiledTemplate = function () {
+	var executeCompiledTemplate = function() {
 
 		// run the render function with the model, resolve on return value if the function returns, otherwise resolve false
 		try {
@@ -195,13 +195,13 @@ function getTemplatePart( mail, template ) {
 			functionCacheCallbacks[functionCacheKey].push( executeCompiledTemplate );
 
 			// get the template contents, compile the function, cache it, and then execute the compiled template function
-			getContents( function ( template ) {
+			getContents( function( template ) {
 
 				functionCache[functionCacheKey] = jade.compile( template, options );
 
 				// go through all the callbacks waiting for this compiled template, and call them
 				for ( var i = 0; i < functionCacheCallbacks[functionCacheKey].length; i++ ) {
-					process.nextTick( functionCacheCallbacks[functionCacheKey][i] );
+					setImmediate( functionCacheCallbacks[functionCacheKey][i] );
 				}
 
 				// clear the callback storage entry
@@ -222,7 +222,7 @@ function getTemplatePart( mail, template ) {
 	return promise;
 }
 
-module.exports.init = function ( params ) {
+module.exports.init = function( params ) {
 
 	params = params || {};
 
@@ -232,7 +232,7 @@ module.exports.init = function ( params ) {
 
 	// copy just the params we expect
 	configs = {
-		mailer:      params.mailer,
+		mailer: params.mailer,
 		templateDir: params.templateDir
 	};
 
@@ -240,18 +240,18 @@ module.exports.init = function ( params ) {
 };
 
 
-module.exports.sendMail = function ( mail, callback ) {
+module.exports.sendMail = function( mail, callback ) {
 
 	var sentObject = { body: null, subject: null };
 
 	// wrap the callback in a execution break
-	var _callback = function ( error, object ) {
+	var _callback = function( error, object ) {
 		if ( typeof callback === 'function' ) {
 
 			if ( object ) {
 				object.sendObject = sentObject;
 			}
-			process.nextTick( function () {
+			setImmediate( function() {
 				callback( error, object );
 			} );
 
@@ -259,7 +259,7 @@ module.exports.sendMail = function ( mail, callback ) {
 	};
 
 	// assemble the send object, and send
-	assembleMailerObject( mail, function ( error, sendObject ) {
+	assembleMailerObject( mail, function( error, sendObject ) {
 
 		if ( error ) {
 			_callback( error, null );

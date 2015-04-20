@@ -133,6 +133,7 @@ module.exports.sendMail = function( mail, callback ) {
 			if ( object ) {
 				object.sendObject = sentObject;
 			}
+			
 			setImmediate( function() {
 				callback( error, object );
 			} );

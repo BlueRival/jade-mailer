@@ -122,7 +122,8 @@ function getTemplatePart( mail, template ) {
 	var promise = new promise_io.Promise();
 	var options = {
 		cache: true,
-		filename: templateFile
+		filename: templateFile,
+		pretty: true // need this to adhere to SMTP line-length
 	};
 	var functionCacheKey = JSON.stringify( options ); // templates are actually compiled into a javascript function for rendering, and are cached here
 

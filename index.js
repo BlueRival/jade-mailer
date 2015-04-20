@@ -59,16 +59,16 @@ function assembleMailerObject( mail, done ) {
 		}
 
 		var sendObject = {
-			html: body,
-			subject: subject,
+			html:                 body,
+			subject:              subject,
 			generateTextFromHTML: true
 		};
 
 		// copy in fields if they exist in the input
 		for ( var i = 0; i < userFields.length; i++ ) {
-			var field = userFields[i];
-			if ( mail[field] !== undefined ) {
-				sendObject[field] = mail[field];
+			var field = userFields[ i ];
+			if ( mail[ field ] !== undefined ) {
+				sendObject[ field ] = mail[ field ];
 			}
 		}
 
@@ -81,25 +81,25 @@ function assembleMailerObject( mail, done ) {
 
 }
 
-
 function getTemplateParts( mail, done ) {
 
 	async.parallel( {
 		subject: function( done ) {
 			render( mail, 'subject', done );
 		},
-		body: function( done ) {
+		body:    function( done ) {
 			render( mail, 'body', done );
 		}
 	}, done );
 
-};
+}
 
 function render( mail, template, done ) {
 
 	var filename = configs.templateDir + "/" + mail.template + '/' + template + '.jade';
 
 	mail.model.cache = true;
+	mail.model.pretty = true; // need this to adhere to SMTP line-length
 
 	jade.renderFile( filename, mail.model, done );
 
@@ -115,13 +115,12 @@ module.exports.init = function( params ) {
 
 	// copy just the params we expect
 	configs = {
-		mailer: params.mailer,
+		mailer:      params.mailer,
 		templateDir: params.templateDir
 	};
 
 	return true;
 };
-
 
 module.exports.sendMail = function( mail, callback ) {
 
